@@ -12,7 +12,10 @@ const Home = () => {
 
   const addTask = () => {
     if (currTask !== "") {
-      setTask([...tasks, { task: currTask, id: Math.random().toString() }]);
+      setTask([
+        ...tasks,
+        { task: currTask, id: Math.random().toString(), edit: false },
+      ]);
     }
     setCurrTask("");
   };
@@ -26,18 +29,37 @@ const Home = () => {
 
   const handleEdit = (id) => {
     setisEdit(true);
+    setTask(
+      tasks.map((item) => {
+        if (item.id === id) {
+          return { ...item, edit: true };
+        } else {
+          return item;
+        }
+      })
+    );
     let editTask = tasks
       .filter((tsk) => {
         return id === tsk.id;
       })
       .map((tsk) => tsk.task);
     setCurrTask(...editTask);
+    console.log(id);
   };
 
   const handleSave = () => {
     setisEdit(false);
-    setTask([...tasks,{task:currTask}])
-  }
+    setTask(
+      tasks.map((item) => {
+        if (item.edit === true) {
+          return { ...item, edit: false, task: currTask };
+        } else {
+          return item;
+        }
+      })
+    );
+    setCurrTask("");
+  };
 
   return (
     <>
@@ -52,8 +74,12 @@ const Home = () => {
             />
           </Col>
           <Col>
-            <Button className="mx-2" disabled={isEdit} onClick={addTask}>Add</Button>
-            <Button disabled={!isEdit} onClick={()=>handleSave}>Save</Button>
+            <Button className="mx-2" disabled={isEdit} onClick={addTask}>
+              Add
+            </Button>
+            <Button disabled={!isEdit} onClick={handleSave}>
+              Save
+            </Button>
           </Col>
         </Row>
         {tasks.length !== 0 &&
